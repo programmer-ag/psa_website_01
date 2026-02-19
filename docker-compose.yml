@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: psa_website_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgre
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d psa_website_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy # This is the magic line
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/psa_website_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgre
